@@ -5,9 +5,10 @@
 
 class Dictionary {
   public:
-    Node * table; //Points to the first of the pairs
+    Node ** table; //Points to the first of the pairs
     unsigned int n; //Maximum number of pairs in the Dictionary
     Dictionary(const unsigned int n) {
+      
       // find a prime less than the maximum table size
       this->n = n;
       if (this->n % 2 == 0)
@@ -24,36 +25,32 @@ class Dictionary {
   	     break;
         this->n -= 2;
       }
-      this->table = new Node[this->n]; // Creates this->n guard nodes (this means, they're inactive)
+      this->table = new Node*[this->n];
 
     }
 
-    ~Dictionary() {
-      delete[] this->table;
-    }
-
-    void put(Node &node) {
-      int i = node.hashCode() % this->n;
-      int jump = 17 - (node.symbol % 17);
+    void put(Node* node) {
+      int i = node->hashCode() % this->n;
+      int jump = 17 - (node->symbol % 17);
       while (1) {
-        Node m = this->table[i];
-        if (m.isGuard) {
-          this->table[i] = node; //delete the other?
+        Node* m = this->table[i];
+        if (m==NULL) {
+          this->table[i] = node;
           break;
         }
         i = (i + jump) % this->n;
       }
     }
 
-    Node get(int i) {
+    Node* get(int i) {
       return this->table[i];
     }
 
     void print() {
       for (int i = 0; i < this->n; ++i) {
-        Node current = this->get(i);
-        if (!current.isGuard)
-          std::cout << std::endl << (char)current.symbol << (char)current.next->symbol;
+        Node* current = this->get(i);
+        if (current)
+          std::cout << std::endl << (char)current->symbol << (char)current->next->symbol;
         else
          std::cout << std::endl << "No value";
       }

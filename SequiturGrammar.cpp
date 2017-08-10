@@ -1,53 +1,61 @@
-#include <vector>//Delete
-#include <string>//Delete
 #include <iostream>//Delete
 #include "Dictionary.cpp"
 
 class SequiturGrammar {
   private:
-    std::string grammar;//Remove
-    std::vector<Node*> vec; //Remove
     Dictionary* index;
+    int n;
+
+    //Does I need a Rule?
+    Node* initialGuard;
+    Node* last;
+    //Does I need a Rule?
 
   public:
     SequiturGrammar() {
-      //grammar = "";//Remove
-      index = new Dictionary(13);
+      this->index = new Dictionary(13);
+      this->n = 0;
+
+      Node* S = new Node('S'); //Use another symbol, another thing(?)
+      this-> initialGuard = new Node();
+      this->last = this->initialGuard;
+
+      S->next = this->initialGuard;
+      this->initialGuard->prev = S;
+      this->last->next = this->initialGuard;
     }
-    ~SequiturGrammar() {
-      delete index;
-    }
+
 
     void put(int c) {
       Node* n = new Node(c);
-      if (this->vec.size() >= 1) {
-        Node* last = this->vec.back();
-        last->next=n;
-        n->prev=last;
-        this->index->put(*last);
-      }
-      vec.push_back(n);
-    }
+      Node* prevLast = this->last;
+      prevLast->next = n;
+      n->prev = prevLast;
+      this->last = n;
+      this->last->next = this->initialGuard;
+      ++this->n;
 
-    std::string get() {
-      return grammar;//Remove
+      if (this->n >= 2)
+        this->index->put(prevLast);
     }
 
     void print() {
-      //this->index->print();//Delete
-      Node* head = this->vec.front();
-      Node* t = head;
-      while (1) {
-        std::cout << std::endl << t->symbol;
-        if (t->next == NULL) break;
+      this->index->print();
+
+      std::cout << std::endl;
+      Node* t = this->initialGuard->prev;
+      while (!t->isGuard) {
+        std::cout << (char)t->symbol;
         t = t->next;
       }
 
-      while (1) {
-        std::cout << std::endl << t->symbol;
-        if (t->prev == NULL) break;
-        t = t->prev;
+      std::cout << " -> ";
+      t = t->next;
+      while (!t->isGuard) {
+        std::cout <<  (char)t->symbol;
+        t = t->next;
       }
+      std::cout << std::endl;
     }
 
 };
