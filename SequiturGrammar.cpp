@@ -3,7 +3,6 @@
 
 class SequiturGrammar {
   private:
-    Dictionary* index;
     int n;
 
     //Does I need a Rule?
@@ -12,6 +11,8 @@ class SequiturGrammar {
     //Does I need a Rule?
 
   public:
+    Dictionary* index; // change to private as the others
+
     SequiturGrammar() {
       this->index = new Dictionary(13);
       this->n = 0;
@@ -24,7 +25,6 @@ class SequiturGrammar {
       this->initialGuard->prev = S;
       this->last->next = this->initialGuard;
     }
-
 
     void put(int c) {
       Node* n = new Node(c);

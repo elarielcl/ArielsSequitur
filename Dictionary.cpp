@@ -7,8 +7,9 @@ class Dictionary {
   public:
     Node ** table; //Points to the first of the pairs
     unsigned int n; //Maximum number of pairs in the Dictionary
+    Node* deleted;
     Dictionary(const unsigned int n) {
-      
+
       // find a prime less than the maximum table size
       this->n = n;
       if (this->n % 2 == 0)
@@ -26,7 +27,7 @@ class Dictionary {
         this->n -= 2;
       }
       this->table = new Node*[this->n];
-
+      this->deleted = new Node(true); // A guard node represents a deleted  one in the table :D
     }
 
     void put(Node* node) {
@@ -34,7 +35,7 @@ class Dictionary {
       int jump = 17 - (node->symbol % 17);
       while (1) {
         Node* m = this->table[i];
-        if (m==NULL) {
+        if (m==NULL || m->isGuard) {
           this->table[i] = node;
           break;
         }
@@ -46,10 +47,40 @@ class Dictionary {
       return this->table[i];
     }
 
+    Node* get(Node* node) {
+      int i = node->hashCode() % this->n;
+      int jump = 17 - (node->symbol % 17);
+      while (1) {
+        Node* m = this->table[i];
+        if (m==NULL) {
+          break;
+        }else if(!node->isGuard && node->symbol == m->symbol && node->next->symbol==m->next->symbol) {
+          return m;
+        }
+        i = (i + jump) % this->n;
+      }
+      return NULL;
+    }
+
+    void remove(Node* node) {
+      int i = node->hashCode() % this->n;
+      int jump = 17 - (node->symbol % 17);
+      while (1) {
+        Node* m = this->table[i];
+        if (m==NULL) {
+          return;
+        }else if(node->symbol == m->symbol && node->next->symbol==m->next->symbol) {
+          this->table[i] = deleted;
+          return;
+        }
+        i = (i + jump) % this->n;
+      }
+    }
+
     void print() {
       for (int i = 0; i < this->n; ++i) {
         Node* current = this->get(i);
-        if (current)
+        if (current && !current->isGuard)
           std::cout << std::endl << (char)current->symbol << (char)current->next->symbol;
         else
          std::cout << std::endl << "No value";
