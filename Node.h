@@ -17,4 +17,6 @@ class Node {
 
     //Return the hashCode of the pair
     int hashCode();
+
+    void printRule();
 };

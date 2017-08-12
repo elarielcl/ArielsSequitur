@@ -20,6 +20,19 @@ Rule::Rule(int c, SequiturGrammar* grammar) {
   this->printed = false;
 }
 
+void Rule::put2(int c) {
+  ++this->n;
+  Node* n = new Node(this, c);
+  this->last->next = n;
+  n->prev = this->last;
+  n->next = this->guard;
+  this->last = n;
+  if (this->n >= 2) {
+    this->grammar->index->putUnique(this->last->prev);
+  }
+}
+
+
 void Rule::put(int c) {
   ++this->n;
   Node* n = new Node(this, c);

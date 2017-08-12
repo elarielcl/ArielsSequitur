@@ -27,3 +27,9 @@ int Node::hashCode() {
 bool Node::digramOverlap(Node* other) {
   return this->next == other || this->prev == other;
 }
+
+void Node::printRule() {
+  Node* current = this;
+  while (!current->isGuard) current = current->next;
+  current->rule->print();
+}
