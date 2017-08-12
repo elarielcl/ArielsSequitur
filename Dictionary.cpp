@@ -22,7 +22,7 @@ Dictionary::Dictionary(const unsigned int n) {
     this->n -= 2;
   }
   this->table = new Node*[this->n];
-  this->deleted = new Node(true); // A guard node represents a deleted  one in the table :D
+  this->deleted = new Node(NULL, true); // A guard node represents a deleted  one in the table :D
 }
 
 void Dictionary::put(Node* node) {
@@ -73,10 +73,19 @@ void Dictionary::remove(Node* node) {
 }
 
 void Dictionary::print() {
+  std::cout << "INDEX" << std::endl;
   for (int i = 0; i < this->n; ++i) {
     Node* current = this->get(i);
-    if (current && !current->isGuard)
-      std::cout << (char)current->symbol << (char)current->next->symbol << std::endl;
+    if (current && !current->isGuard) {
+      if (current->symbol < 128)
+        std::cout << (char)current->symbol << ",";
+      else
+        std::cout << current->symbol << ",";
+      if (current->next->symbol < 128)
+        std::cout << (char)current->next->symbol << std::endl;
+      else
+        std::cout << current->next->symbol << std::endl;
+    }
     else
      std::cout << "No value" << std::endl;
   }

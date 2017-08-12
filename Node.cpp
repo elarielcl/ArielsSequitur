@@ -1,16 +1,20 @@
 #include "Node.h"
+#include "Rule.h"
 
-Node::Node() {
+Node::Node(Rule* rule) {
   this->isGuard = true;
+  this->rule = rule;
 }
 
-Node::Node(int symbol) {
+Node::Node(Rule* rule, int symbol) {
   this->isGuard = false;
   this->symbol = symbol;
+  this->rule = rule;
 }
 
-Node::Node(bool isGuard) {
+Node::Node(Rule* rule, bool isGuard) {
   this->isGuard = isGuard;
+  this->rule = rule;
 }
 
 //Return the hashCode of the pair

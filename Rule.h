@@ -1,14 +1,15 @@
-class Dictionary;
+class SequiturGrammar;
 class Node;
 class Rule {
 public:
     Node* guard;
     Node* last;
-    Dictionary* index;
+    SequiturGrammar* grammar;
     int n;
     int usage;
-
-    Rule(int c, Dictionary* index);
+    bool printed;
+    
+    Rule(int c, SequiturGrammar* grammar);
 
     void put(int c);
 

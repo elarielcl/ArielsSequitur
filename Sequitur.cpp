@@ -15,12 +15,11 @@ int main() {
   inputTest();
   //automatedTest();
   //digramOverlapTest();
-
 }
 
 
 void digramOverlapTest() {
-  Rule* testRule = new Rule('S' ,new Dictionary(13));
+  Rule* testRule = new Rule(128 ,new SequiturGrammar());
   testRule->put('a');
   testRule->put('a');
   testRule->put('a');
@@ -57,14 +56,4 @@ void automatedTest() {
   grammar.put('a');
 
   grammar.print();
-  cout << "-----------------" << endl;
-  Node f('a');
-  f.next=&f;
-
-  grammar.index->remove(&f);
-  grammar.print();
-  cout << "-----------------" << endl;
-  grammar.index->put(&f);
-  grammar.print();
-  cout << "-----------------" << endl;
 }

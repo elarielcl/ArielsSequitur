@@ -1,15 +1,17 @@
+class Rule;
 class Node {
   public:
     int symbol;
     bool isGuard;
     Node* next;
     Node* prev;
+    Rule* rule;
 
-    Node();
+    Node(Rule* rule);
 
-    Node(int symbol);
+    Node(Rule* rule, int symbol);
 
-    Node(bool isGuard);
+    Node(Rule* rule, bool isGuard);
 
     bool digramOverlap(Node* other);
 

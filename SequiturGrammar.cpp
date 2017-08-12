@@ -4,7 +4,10 @@
 #include "Rule.h"
 SequiturGrammar::SequiturGrammar() {
   this->index = new Dictionary(13);
-  this->initialRule = new Rule('S', this->index); //Every rule will have a reference to the global index
+  //128 first value after ASCII values
+  this->initialRule = new Rule(128, this); //Every rule will have a reference to the global index
+  this->numberOfRules = 1;
+
 }
 
 void SequiturGrammar::put(int c) {
@@ -12,7 +15,5 @@ void SequiturGrammar::put(int c) {
 }
 
 void SequiturGrammar::print() {
-  this->index->print();
-
   this->initialRule->print();
 }
