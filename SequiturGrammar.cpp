@@ -11,7 +11,9 @@ SequiturGrammar::SequiturGrammar() {
 }
 
 void SequiturGrammar::put(int c) {
+  this->initialRule->print();
   this->initialRule->put2(c);
+  std::cout << std::endl;
 }
 
 void SequiturGrammar::print() {

@@ -141,7 +141,6 @@ void Rule::put(int c) {
 
 void Rule::print() {
   std::vector<Rule*> v;
-  this-> printed = true;
   std::cout << this->guard->prev->symbol;
   std::cout << " -> ";
   Node* t = this->guard->next;
@@ -150,17 +149,20 @@ void Rule::print() {
       std::cout <<  (char)t->symbol<< " ";
     else {
       std::cout <<  t->symbol<< " ";
+    //  std::cout << "RULE TO PRINT=" << t->rule->guard->prev->symbol << std::endl;
       if (!t->rule->printed) {
         v.push_back(t->rule);
         t->rule->printed = true;
+        //std::cout << "\nPutting printed to=" << t->rule->guard->prev->symbol << std::endl;
       }
     }
     t = t->next;
   }
   std::cout << std::endl;
-
+  //std::cout << "SUB RULES TO PRINT=" << v.size() << std::endl;
   for (int i = 0; i<v.size(); ++i) {
     v[i]->print();
+    //std::cout << "\nPutting UNprinted to=" << v[i]->guard->prev->symbol << std::endl;
+    v[i]->printed = false;
   }
-  this->printed = false;
 }

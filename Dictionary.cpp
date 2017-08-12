@@ -51,7 +51,8 @@ void Dictionary::putUnique(Node* node) {
       return;
     }else if(node->symbol == m->symbol && node->next->symbol==m->next->symbol) { //Is not Unique
       if (m->digramOverlap(node)) return;
-///IMPLEMENTING
+
+/*
       //Information
       std::cout << "Violation of " << (char)node->symbol << "," << (char)node->next->symbol << " uniqueness" << std::endl;
       if (m->prev->isGuard && m->next->next->isGuard) {
@@ -62,10 +63,10 @@ void Dictionary::putUnique(Node* node) {
         m->printRule();
       }
       //Information
-
+*/
       if (m->prev->isGuard && m->next->next->isGuard) {
-        this->print();
-        Rule* existentRule = m->rule;
+        //this->print();
+        Rule* existentRule = m->prev->rule;
 
         //Create one new node
         Node* one = new Node(existentRule, existentRule->guard->prev->symbol);
@@ -93,11 +94,11 @@ void Dictionary::putUnique(Node* node) {
           this->putUnique(one);
 
 
-        one->printRule();
-        this->print();
+        //one->printRule();
+        //this->print();
 
       }else {
-        this->print();
+        //this->print();
         int ruleName = (this->grammar->numberOfRules ++) + 128; // Another idea?
         Rule* newRule = new Rule(ruleName, this->grammar);
 
@@ -156,16 +157,12 @@ void Dictionary::putUnique(Node* node) {
         newRule->last = m->next;
         m->prev = newRule->guard;
         m->next->next = newRule->guard;
-        m->rule = newRule;
-        m->next->rule = newRule;
         newRule->n = 2;
 
-        one->printRule();
-        this->print();
+        //one->printRule();
+        //this->print();
       }
 
-
-//IMPLEMENTING
 
       return;
     }
