@@ -13,7 +13,6 @@ public:
 
     void put(int c);
 
-    void put2(int c);
-
     void print();
+
 };

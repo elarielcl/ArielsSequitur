@@ -44,18 +44,17 @@ void Dictionary::put(Node* node) {
 void Dictionary::putUnique(Node* node) {
   std::cout << "Putting Unique: ";
   node->printDigram();
-  //if (this->get(node) == NULL) this->node->put(node); //IMPROVE
+  if (this->get(node) == NULL) this->put(node); //IMPROVE
+  else {
   int i = node->hashCode() % this->n;
   int jump = 17 - (node->symbol % 17);
   while (1) {
     Node* m = this->table[i];
-    if (m==NULL || m->isGuard) {
-      this->table[i] = node;
-      std::cout << "FOUND A PLACE for:";
-      node->printDigram();
-      this->print();
-      return;
-    }else if(node->symbol == m->symbol && node->next->symbol==m->next->symbol) { //Is not Unique
+    if(node->symbol == m->symbol && node->next->symbol==m->next->symbol) { //Is not Unique
+      std::cout << "TEST=="<< std::endl;
+      m->printRule();
+      node->printRule();
+      std::cout << "TEST=="<< std::endl;
       if (m->digramOverlap(node)) return;
 
 /*
@@ -75,6 +74,7 @@ void Dictionary::putUnique(Node* node) {
         m->printDigram();
         Rule* existentRule = m->prev->rule;
         existentRule->usage++;
+
         //Create one new node
         Node* one = new Node(existentRule, existentRule->guard->prev->symbol);
 
@@ -115,11 +115,12 @@ void Dictionary::putUnique(Node* node) {
                 if (!dOcc->next->isGuard) {
                   this->remove(dOcc);
                 }
+
                 // Delete things
                 dOcc->rule->guard->next->prev = dOcc->prev;
                 dOcc->prev->next = dOcc->rule->guard->next;
                 dOcc->rule->last->next = dOcc->next;
-                dOcc->next->prev = dOcc->rule->last;
+                if (!dOcc->next->isGuard) dOcc->next->prev = dOcc->rule->last;
                 if (dOcc->next->isGuard) {
                   dOcc->next->rule->last = dOcc->rule->last;
                 }
@@ -253,7 +254,7 @@ void Dictionary::putUnique(Node* node) {
               dOcc->rule->guard->next->prev = dOcc->prev;
               dOcc->prev->next = dOcc->rule->guard->next;
               dOcc->rule->last->next = dOcc->next;
-              dOcc->next->prev = dOcc->rule->last;
+              if (!dOcc->next->isGuard) dOcc->next->prev = dOcc->rule->last;
               if (dOcc->next->isGuard) {
                 dOcc->next->rule->last = dOcc->rule->last;
               }
@@ -276,7 +277,7 @@ void Dictionary::putUnique(Node* node) {
       return;
     }
     i = (i + jump) % this->n;
-  }
+  }}
 }
 
 Node* Dictionary::get(int i) {
@@ -299,6 +300,8 @@ Node* Dictionary::get(Node* node) {
 }
 
 void Dictionary::remove(Node* node) {
+  std::cout << "WANNA REMOVE: ";
+  node->printDigram();
   int i = node->hashCode() % this->n;
   int jump = 17 - (node->symbol % 17);
   while (1) {

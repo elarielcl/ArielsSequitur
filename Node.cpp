@@ -26,23 +26,36 @@ int Node::hashCode() {
 
 
 bool Node::digramOverlap(Node* other) {
-  return this->next == other || this->prev == other;
+  return this->next == other || this->prev == other; // same?
 }
 
 void Node::printRule() {
-  Node* current = this;
-  while (!current->isGuard) current = current->next;
-  current->rule->print();
+  Node* guard = this;
+  while (!guard->isGuard) guard=guard->next;
+  std::cout << "RULE USAGE=" << guard->rule->usage << ", ";
+  std::cout << guard->prev->symbol-128;
+  std::cout << " -> ";
+  Node* t = guard->next;
+  while (!t->isGuard) {
+    if (t->symbol<128)
+      std::cout <<  (char)t->symbol<< " ";
+    else {
+      std::cout <<  t->symbol-128<< " ";
+    //  std::cout << "RULE TO PRINT=" << t->rule->guard->prev->symbol << std::endl;
+    }
+    t = t->next;
+  }
+  std::cout << std::endl;
 }
 
 void Node::printDigram() {
   if (this->symbol < 128)
     std::cout << (char)this->symbol << ",";
   else
-    std::cout << this->symbol << ",";
+    std::cout << this->symbol-128 << ",";
 
   if (this->next->symbol < 128)
     std::cout << (char)this->next->symbol << std::endl;
   else
-    std::cout << this->next->symbol << std::endl;  
+    std::cout << this->next->symbol-128 << std::endl;
 }
