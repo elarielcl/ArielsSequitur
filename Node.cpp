@@ -1,5 +1,6 @@
 #include "Node.h"
 #include "Rule.h"
+#include <iostream>
 
 Node::Node(Rule* rule) {
   this->isGuard = true;
@@ -32,4 +33,16 @@ void Node::printRule() {
   Node* current = this;
   while (!current->isGuard) current = current->next;
   current->rule->print();
+}
+
+void Node::printDigram() {
+  if (this->symbol < 128)
+    std::cout << (char)this->symbol << ",";
+  else
+    std::cout << this->symbol << ",";
+
+  if (this->next->symbol < 128)
+    std::cout << (char)this->next->symbol << std::endl;
+  else
+    std::cout << this->next->symbol << std::endl;  
 }

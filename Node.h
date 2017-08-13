@@ -19,4 +19,6 @@ class Node {
     int hashCode();
 
     void printRule();
+
+    void printDigram();
 };

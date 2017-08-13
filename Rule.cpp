@@ -141,6 +141,7 @@ void Rule::put(int c) {
 
 void Rule::print() {
   std::vector<Rule*> v;
+  std::cout << "RULE USAGE=" << this->usage << ", ";
   std::cout << this->guard->prev->symbol;
   std::cout << " -> ";
   Node* t = this->guard->next;

@@ -1,11 +1,12 @@
 class Rule;
 class Dictionary;
 class SequiturGrammar {
-  private:
+  //private:
 
-    Rule* initialRule;
+
 
   public:
+    Rule* initialRule;
     Dictionary* index; // change to private as the others
     int numberOfRules;
     SequiturGrammar();

@@ -42,6 +42,9 @@ void Dictionary::put(Node* node) {
 }
 
 void Dictionary::putUnique(Node* node) {
+  std::cout << "Putting Unique: ";
+  node->printDigram();
+
   int i = node->hashCode() % this->n;
   int jump = 17 - (node->symbol % 17);
   while (1) {
@@ -65,25 +68,28 @@ void Dictionary::putUnique(Node* node) {
       //Information
 */
       if (m->prev->isGuard && m->next->next->isGuard) {
-        //this->print();
+        std::cout <<  "Existent Rule: ";
+        m->printDigram();
         Rule* existentRule = m->prev->rule;
-
+        existentRule->usage++;
         //Create one new node
         Node* one = new Node(existentRule, existentRule->guard->prev->symbol);
 
         //Remove ab from index
         if (!node->prev->isGuard) {
-          this->remove(node->prev); //DO IT RECURSIVE
+          this->remove(node->prev);
         }
         //Remove cd from index
         if (!node->next->next->isGuard) {
-          this->remove(node->next); //DO IT RECURSIVE
+          this->remove(node->next);
         }
 
         //Insert one
         node->prev->next = one;
         one->prev = node->prev;
         one->next = node->next->next; //Delete the digram or put this on the rule
+        if (!node->next->next->isGuard) node->next->next->prev = one;
+
 
         if (one->next->isGuard) // In case the digram was the last of the rule
           one->next->rule->last = one;
@@ -93,63 +99,128 @@ void Dictionary::putUnique(Node* node) {
         if (!one->next->isGuard)
           this->putUnique(one);
 
+          Node* dOcc = existentRule->guard->next; //deprecatedOccurrence
+          while (!dOcc->isGuard) {
+            if(dOcc->symbol>=128) {
+              dOcc->rule->usage--;
+              if (dOcc->rule->usage <= 1) {
 
+                //Delete x1B and Bx2
+                if (!dOcc->prev->isGuard) {
+                  this->remove(dOcc->prev);
+                }
+                if (!dOcc->next->isGuard) {
+                  this->remove(dOcc);
+                }
+                // Delete things
+                dOcc->rule->guard->next->prev = dOcc->prev;
+                dOcc->prev->next = dOcc->rule->guard->next;
+                dOcc->rule->last->next = dOcc->next;
+                dOcc->next->prev = dOcc->rule->last;
+                if (dOcc->next->isGuard) {
+                  dOcc->next->rule->last = dOcc->rule->last;
+                }
+                if (!dOcc->next->isGuard){
+                  this->putUnique(dOcc->next->prev);
+                }
+                if (!dOcc->prev->isGuard) {
+                  this->putUnique(dOcc->prev);
+                }
+
+                //Revisar por el last
+              }
+            }
+            dOcc = dOcc->next;
+        }
         //one->printRule();
         //this->print();
 
       }else {
-        //this->print();
+        std::cout <<  "New Rule for: ";
+        m->printDigram();
+
         int ruleName = (this->grammar->numberOfRules ++) + 128; // Another idea?
         Rule* newRule = new Rule(ruleName, this->grammar);
-
+        newRule->usage = 2;
         //Create two new nodes
         Node* one = new Node(newRule, ruleName);
         Node* two = new Node(newRule, ruleName);
 
         //Remove ab from index
         if (!node->prev->isGuard) {
-          this->remove(node->prev); //DO IT RECURSIVE
+          std::cout << "REMOVE: ";
+          node->prev->printDigram();
+          this->remove(node->prev);
         }
         //Remove cd from index
         if (!node->next->next->isGuard) {
-          this->remove(node->next); //DO IT RECURSIVE
+          std::cout << "REMOVE: ";
+          node->next->printDigram();
+          this->remove(node->next);
         }
+
+
 
         //Insert one
         node->prev->next = one;
         one->prev = node->prev;
         one->next = node->next->next; //Delete the digram or put this on the rule
+        if (!node->next->next->isGuard) node->next->next->prev = one;
 
         if (one->next->isGuard) // In case the digram was the last of the rule
           one->next->rule->last = one;
 
+        this->grammar->initialRule->print();
         //Here put in the index the new digram (case not before)
-        if (!one->prev->isGuard)
-          this->put(one->prev); //Not recursive
-        if (!one->next->isGuard)
-          this->put(one); //Not recursive
+        if (!one->prev->isGuard) {
+          std::cout << "Insert: ";
+          one->prev->printDigram();
+          this->putUnique(one->prev); //Not recursive
+        }
+        if (!one->next->isGuard) {
+          std::cout << "Insert: ";
+          one->printDigram();
+          this->putUnique(one); //Not recursive
+        }
+
+
 
         //Remove x1b and cx2 from index
         if (!m->prev->isGuard) {
-          this->remove(m->prev); //DO IT RECURSIVE
+          std::cout << "REMOVE: ";
+          m->prev->printDigram();
+          m->printDigram();
+
+          m->next->printDigram();
+          this->remove(m->prev);
         }
-        if (!m->next->isGuard) {
-          this->remove(m->next); //DO IT RECURSIVE
+
+
+        if (!m->next->next->isGuard) {
+          std::cout << "REMOVE: ";
+          m->next->printDigram();
+          this->remove(m->next);
         }
 
         //Insert two
         m->prev->next = two;
         two->prev = m->prev;
         two->next = m->next->next;
+        if (!m->next->next->isGuard) m->next->next->prev = two;
 
         if (two->next->isGuard) // In case the digram was the last of the rule
           two->next->rule->last = two;
-
         //Here put in the index the new digrams (case not before)
-        if (!two->prev->isGuard)
-          this->put(two->prev); //Not recursive
-        if (!two->next->isGuard)
-          this->put(two); //Not recursive
+        if (!two->prev->isGuard) {
+          std::cout << "Insert: ";
+          two->prev->printDigram();
+          this->putUnique(two->prev); //Not recursive
+        }
+        if (!two->next->isGuard) {
+          std::cout << "Insert: ";
+          two->printDigram();
+          this->putUnique(two); //Not recursive
+        }
 
 
         //Put the symbols in the new rule
@@ -161,6 +232,41 @@ void Dictionary::putUnique(Node* node) {
 
         //one->printRule();
         //this->print();
+
+        Node* dOcc = newRule->guard->next; //deprecatedOccurrence
+        while (!dOcc->isGuard) { //DONT FORGET CHANGE THE OTHER
+          if(dOcc->symbol>=128) {
+            dOcc->rule->usage--;
+            if (dOcc->rule->usage <= 1) {
+              //Delete x1B and Bx2
+              if (!dOcc->prev->isGuard) {
+                this->remove(dOcc->prev);
+              }
+              if (!dOcc->next->isGuard) {
+                this->remove(dOcc);
+              }
+
+              // Delete things
+              dOcc->rule->guard->next->prev = dOcc->prev;
+              dOcc->prev->next = dOcc->rule->guard->next;
+              dOcc->rule->last->next = dOcc->next;
+              dOcc->next->prev = dOcc->rule->last;
+              if (dOcc->next->isGuard) {
+                dOcc->next->rule->last = dOcc->rule->last;
+              }
+              if (!dOcc->next->isGuard){
+                this->putUnique(dOcc->next->prev);
+              }
+              if (!dOcc->prev->isGuard) {
+                this->putUnique(dOcc->prev);
+              }
+
+              //Revisar por el last
+            }
+          }
+          dOcc = dOcc->next;
+        }
+
       }
 
 
@@ -197,7 +303,11 @@ void Dictionary::remove(Node* node) {
     if (m==NULL) {
       return;
     }else if(!m->isGuard && node->symbol == m->symbol && node->next->symbol==m->next->symbol) {
-      this->table[i] = deleted;
+      if (node->symbol == node->next->symbol && !node->next->next->isGuard && node->symbol == node->next->next->symbol) //TEST THIS
+        this->table[i] = node->next;
+      else if (node->symbol == node->next->symbol && !node->prev->isGuard && node->symbol == node->prev->symbol) //TEST THIS
+        this->table[i] = node->prev;
+      else this->table[i] = deleted;
       return;
     }
     i = (i + jump) % this->n;
