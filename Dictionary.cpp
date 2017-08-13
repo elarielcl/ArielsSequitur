@@ -309,10 +309,11 @@ void Dictionary::remove(Node* node) {
     if (m==NULL) {
       return;
     }else if(!m->isGuard && node->symbol == m->symbol && node->next->symbol==m->next->symbol) {
-      if (node->symbol == node->next->symbol && !node->next->next->isGuard && node->symbol == node->next->next->symbol) //TEST THIS
-        this->table[i] = node->next;
-      else if (node->symbol == node->next->symbol && !node->prev->isGuard && node->symbol == node->prev->symbol) //TEST THIS
-        this->table[i] = node->prev;
+      if (m->symbol == m->next->symbol && !m->next->next->isGuard && m->symbol == m->next->next->symbol && !m->next->next->next->isGuard && m->symbol == m->next->next->next->symbol) return;
+      else if (m->symbol == m->next->symbol && !m->next->next->isGuard && m->symbol == m->next->next->symbol) //TEST THIS
+        this->table[i] = m->next;
+      /*else if (m->symbol == m->next->symbol && !m->prev->isGuard && m->symbol == m->prev->symbol) //TEST THIS
+        this->table[i] = m->prev;*/
       else this->table[i] = deleted;
       return;
     }
