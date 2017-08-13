@@ -61,3 +61,14 @@ void Rule::print() {
     v[i]->printed = false;
   }
 }
+
+void Rule::printUncompress() {
+  Node* current = this->guard->next;
+  while (!current->isGuard) {
+    if (current->symbol < 128)
+      std::cout << (char)current->symbol;
+    else
+      current->rule->printUncompress();
+    current = current->next;
+  }
+}

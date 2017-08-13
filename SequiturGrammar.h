@@ -15,4 +15,6 @@ class SequiturGrammar {
 
     void print();
 
+    void printUncompress();
+
 };

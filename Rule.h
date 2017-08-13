@@ -15,4 +15,5 @@ public:
 
     void print();
 
+    void printUncompress();
 };

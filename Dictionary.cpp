@@ -42,8 +42,6 @@ void Dictionary::put(Node* node) {
 }
 
 void Dictionary::putUnique(Node* node) {
-  std::cout << "Putting Unique: ";
-  node->printDigram();
   if (this->get(node) == NULL) this->put(node); //IMPROVE
   else {
   int i = node->hashCode() % this->n;
@@ -51,10 +49,6 @@ void Dictionary::putUnique(Node* node) {
   while (1) {
     Node* m = this->table[i];
     if(node->symbol == m->symbol && node->next->symbol==m->next->symbol) { //Is not Unique
-      std::cout << "TEST=="<< std::endl;
-      m->printRule();
-      node->printRule();
-      std::cout << "TEST=="<< std::endl;
       if (m->digramOverlap(node)) return;
 
 /*
@@ -70,8 +64,6 @@ void Dictionary::putUnique(Node* node) {
       //Information
 */
       if (m->prev->isGuard && m->next->next->isGuard) {
-        std::cout <<  "Existent Rule: ";
-        m->printDigram();
         Rule* existentRule = m->prev->rule;
         existentRule->usage++;
 
@@ -140,8 +132,6 @@ void Dictionary::putUnique(Node* node) {
         //this->print();
 
       }else {
-        std::cout <<  "New Rule for: ";
-        m->printDigram();
 
         int ruleName = (this->grammar->numberOfRules ++) + 128; // Another idea?
         Rule* newRule = new Rule(ruleName, this->grammar);
@@ -152,14 +142,10 @@ void Dictionary::putUnique(Node* node) {
 
         //Remove ab from index
         if (!node->prev->isGuard) {
-          std::cout << "REMOVE: ";
-          node->prev->printDigram();
           this->remove(node->prev);
         }
         //Remove cd from index
         if (!node->next->next->isGuard) {
-          std::cout << "REMOVE: ";
-          node->next->printDigram();
           this->remove(node->next);
         }
 
@@ -174,16 +160,11 @@ void Dictionary::putUnique(Node* node) {
         if (one->next->isGuard) // In case the digram was the last of the rule
           one->next->rule->last = one;
 
-        this->grammar->initialRule->print();
         //Here put in the index the new digram (case not before)
         if (!one->prev->isGuard) {
-          std::cout << "Insert: ";
-          one->prev->printDigram();
           this->put(one->prev); //Not recursive
         }
         if (!one->next->isGuard) {
-          std::cout << "Insert: ";
-          one->printDigram();
           this->put(one); //Not recursive
         }
 
@@ -191,18 +172,11 @@ void Dictionary::putUnique(Node* node) {
 
         //Remove x1b and cx2 from index
         if (!m->prev->isGuard) {
-          std::cout << "REMOVE: ";
-          m->prev->printDigram();
-          m->printDigram();
-
-          m->next->printDigram();
           this->remove(m->prev);
         }
 
 
         if (!m->next->next->isGuard) {
-          std::cout << "REMOVE: ";
-          m->next->printDigram();
           this->remove(m->next);
         }
 
@@ -216,13 +190,9 @@ void Dictionary::putUnique(Node* node) {
           two->next->rule->last = two;
         //Here put in the index the new digrams (case not before)
         if (!two->prev->isGuard) {
-          std::cout << "Insert: ";
-          two->prev->printDigram();
           this->put(two->prev); //Not recursive
         }
         if (!two->next->isGuard) {
-          std::cout << "Insert: ";
-          two->printDigram();
           this->put(two); //Not recursive
         }
 
@@ -300,8 +270,6 @@ Node* Dictionary::get(Node* node) {
 }
 
 void Dictionary::remove(Node* node) {
-  std::cout << "WANNA REMOVE: ";
-  node->printDigram();
   int i = node->hashCode() % this->n;
   int jump = 17 - (node->symbol % 17);
   while (1) {

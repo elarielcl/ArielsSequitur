@@ -41,6 +41,7 @@ void inputTest() {
     grammar.put(c);
   }
   grammar.print();
+  grammar.printUncompress();
 }
 
 
