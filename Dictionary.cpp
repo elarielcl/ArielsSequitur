@@ -44,13 +44,16 @@ void Dictionary::put(Node* node) {
 void Dictionary::putUnique(Node* node) {
   std::cout << "Putting Unique: ";
   node->printDigram();
-
+  //if (this->get(node) == NULL) this->node->put(node); //IMPROVE
   int i = node->hashCode() % this->n;
   int jump = 17 - (node->symbol % 17);
   while (1) {
     Node* m = this->table[i];
     if (m==NULL || m->isGuard) {
       this->table[i] = node;
+      std::cout << "FOUND A PLACE for:";
+      node->printDigram();
+      this->print();
       return;
     }else if(node->symbol == m->symbol && node->next->symbol==m->next->symbol) { //Is not Unique
       if (m->digramOverlap(node)) return;

@@ -142,14 +142,14 @@ void Rule::put(int c) {
 void Rule::print() {
   std::vector<Rule*> v;
   std::cout << "RULE USAGE=" << this->usage << ", ";
-  std::cout << this->guard->prev->symbol;
+  std::cout << this->guard->prev->symbol-128;
   std::cout << " -> ";
   Node* t = this->guard->next;
   while (!t->isGuard) {
     if (t->symbol<128)
       std::cout <<  (char)t->symbol<< " ";
     else {
-      std::cout <<  t->symbol<< " ";
+      std::cout <<  t->symbol-128<< " ";
     //  std::cout << "RULE TO PRINT=" << t->rule->guard->prev->symbol << std::endl;
       if (!t->rule->printed) {
         v.push_back(t->rule);
