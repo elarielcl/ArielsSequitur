@@ -179,12 +179,12 @@ void Dictionary::putUnique(Node* node) {
         if (!one->prev->isGuard) {
           std::cout << "Insert: ";
           one->prev->printDigram();
-          this->putUnique(one->prev); //Not recursive
+          this->put(one->prev); //Not recursive
         }
         if (!one->next->isGuard) {
           std::cout << "Insert: ";
           one->printDigram();
-          this->putUnique(one); //Not recursive
+          this->put(one); //Not recursive
         }
 
 
@@ -218,12 +218,12 @@ void Dictionary::putUnique(Node* node) {
         if (!two->prev->isGuard) {
           std::cout << "Insert: ";
           two->prev->printDigram();
-          this->putUnique(two->prev); //Not recursive
+          this->put(two->prev); //Not recursive
         }
         if (!two->next->isGuard) {
           std::cout << "Insert: ";
           two->printDigram();
-          this->putUnique(two); //Not recursive
+          this->put(two); //Not recursive
         }
 
 
@@ -309,11 +309,9 @@ void Dictionary::remove(Node* node) {
     if (m==NULL) {
       return;
     }else if(!m->isGuard && node->symbol == m->symbol && node->next->symbol==m->next->symbol) {
-      if (m->symbol == m->next->symbol && !m->next->next->isGuard && m->symbol == m->next->next->symbol && !m->next->next->next->isGuard && m->symbol == m->next->next->next->symbol) return;
-      else if (m->symbol == m->next->symbol && !m->next->next->isGuard && m->symbol == m->next->next->symbol) //TEST THIS
+      if (m->digramOverlap(node)) return;
+      else if (m == node && !m->next->next->isGuard && m->symbol == m->next->symbol && m->symbol == m->next->next->symbol)
         this->table[i] = m->next;
-      /*else if (m->symbol == m->next->symbol && !m->prev->isGuard && m->symbol == m->prev->symbol) //TEST THIS
-        this->table[i] = m->prev;*/
       else this->table[i] = deleted;
       return;
     }
@@ -329,11 +327,11 @@ void Dictionary::print() {
       if (current->symbol < 128)
         std::cout << (char)current->symbol << ",";
       else
-        std::cout << current->symbol << ",";
+        std::cout << current->symbol-128 << ",";
       if (current->next->symbol < 128)
         std::cout << (char)current->next->symbol << std::endl;
       else
-        std::cout << current->next->symbol << std::endl;
+        std::cout << current->next->symbol-128 << std::endl;
     }
     else
      std::cout << "No value" << std::endl;
