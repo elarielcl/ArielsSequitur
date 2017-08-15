@@ -9,6 +9,7 @@ class SequiturGrammar {
     Rule* initialRule;
     Dictionary* index; // change to private as the others
     int numberOfRules;
+    int M;
     SequiturGrammar();
 
     void put(int c);

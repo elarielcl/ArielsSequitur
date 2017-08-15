@@ -4,6 +4,7 @@ class Dictionary {
   public:
     Node ** table; //Points to the first of the pairs
     unsigned int n; //Maximum number of pairs in the Dictionary
+    unsigned int a;// Actual number of pairs in the Dictionary
     Node* deleted;
     SequiturGrammar* grammar;
 

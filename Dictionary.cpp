@@ -23,9 +23,11 @@ Dictionary::Dictionary(const unsigned int n, SequiturGrammar* grammar) {
      break;
     this->n -= 2;
   }
+  std::cerr << "Espacio ocupado por el diccionario: " << ((sizeof (Node*))*this->n)/1000000 << "MB" << std::endl;
   this->table = new Node*[this->n];
   this->deleted = new Node(NULL, true); // A guard node represents a deleted  one in the table :D
   this->grammar = grammar;
+  this->a = 0;
 }
 
 void Dictionary::put(Node* node) {
@@ -35,6 +37,7 @@ void Dictionary::put(Node* node) {
     Node* m = this->table[i];
     if (m==NULL || m->isGuard) {
       this->table[i] = node;
+      this->a++;
       break;
     }
     i = (i + jump) % this->n;
@@ -86,6 +89,7 @@ void Dictionary::putUnique(Node* node) {
         if (!node->next->next->isGuard) node->next->next->prev = one;
 
 
+
         if (one->next->isGuard) // In case the digram was the last of the rule
           one->next->rule->last = one;
 
@@ -94,9 +98,17 @@ void Dictionary::putUnique(Node* node) {
         if (!one->next->isGuard)
           this->putUnique(one);
 
+          //DELETING
+
+          delete node->next;
+          delete node;
+
+          //DELETING
+
+          //CHECK DELETION HERE
           Node* dOcc = existentRule->guard->next; //deprecatedOccurrence
           while (!dOcc->isGuard) {
-            if(dOcc->symbol>=128) {
+            if(dOcc->symbol>=this->grammar->M) {
               dOcc->rule->usage--;
               if (dOcc->rule->usage <= 1) {
 
@@ -116,6 +128,8 @@ void Dictionary::putUnique(Node* node) {
                 if (dOcc->next->isGuard) {
                   dOcc->next->rule->last = dOcc->rule->last;
                 }
+
+
                 if (!dOcc->next->isGuard){
                   this->putUnique(dOcc->next->prev);
                 }
@@ -123,17 +137,28 @@ void Dictionary::putUnique(Node* node) {
                   this->putUnique(dOcc->prev);
                 }
 
+                Node* next = dOcc->next;
+
+                //DELETING
+
+                delete dOcc->rule->guard->prev;
+                delete dOcc->rule->guard;
+                delete dOcc->rule;
+                delete dOcc;
+
+                //DELETING
+                dOcc = next;
                 //Revisar por el last
-              }
+              }else dOcc = dOcc->next;
             }
-            dOcc = dOcc->next;
+            else dOcc = dOcc->next;
         }
         //one->printRule();
         //this->print();
 
       }else {
 
-        int ruleName = (this->grammar->numberOfRules ++) + 128; // Another idea?
+        int ruleName = (this->grammar->numberOfRules ++) + this->grammar->M; // Another idea?
         Rule* newRule = new Rule(ruleName, this->grammar);
         newRule->usage = 2;
         //Create two new nodes
@@ -204,12 +229,20 @@ void Dictionary::putUnique(Node* node) {
         m->next->next = newRule->guard;
         newRule->n = 2;
 
+
+        //DELETING
+
+        delete node->next;
+        delete node;
+
+        //DELETING
+
         //one->printRule();
         //this->print();
 
         Node* dOcc = newRule->guard->next; //deprecatedOccurrence
         while (!dOcc->isGuard) { //DONT FORGET CHANGE THE OTHER
-          if(dOcc->symbol>=128) {
+          if(dOcc->symbol>=this->grammar->M) {
             dOcc->rule->usage--;
             if (dOcc->rule->usage <= 1) {
               //Delete x1B and Bx2
@@ -228,17 +261,30 @@ void Dictionary::putUnique(Node* node) {
               if (dOcc->next->isGuard) {
                 dOcc->next->rule->last = dOcc->rule->last;
               }
+
+
+
               if (!dOcc->next->isGuard){
                 this->putUnique(dOcc->next->prev);
               }
               if (!dOcc->prev->isGuard) {
                 this->putUnique(dOcc->prev);
               }
+              Node* next = dOcc->next;
 
+              //DELETING
+
+              delete dOcc->rule->guard->prev;
+              delete dOcc->rule->guard;
+              delete dOcc->rule;
+              delete dOcc;
+
+              //DELETING
+              dOcc = next;
               //Revisar por el last
-            }
+            }else dOcc = dOcc->next;
           }
-          dOcc = dOcc->next;
+          else dOcc = dOcc->next;
         }
 
       }
@@ -280,7 +326,7 @@ void Dictionary::remove(Node* node) {
       if (m->digramOverlap(node)) return;
       else if (m == node && !m->next->next->isGuard && m->symbol == m->next->symbol && m->symbol == m->next->next->symbol)
         this->table[i] = m->next;
-      else this->table[i] = deleted;
+      else {this->table[i] = deleted; this->a--;}
       return;
     }
     i = (i + jump) % this->n;
@@ -292,14 +338,14 @@ void Dictionary::print() {
   for (int i = 0; i < this->n; ++i) {
     Node* current = this->get(i);
     if (current && !current->isGuard) {
-      if (current->symbol < 128)
+      if (current->symbol < this->grammar->M)
         std::cout << (char)current->symbol << ",";
       else
-        std::cout << current->symbol-128 << ",";
-      if (current->next->symbol < 128)
+        std::cout << current->symbol-this->grammar->M << ",";
+      if (current->next->symbol < this->grammar->M)
         std::cout << (char)current->next->symbol << std::endl;
       else
-        std::cout << current->next->symbol-128 << std::endl;
+        std::cout << current->next->symbol-this->grammar->M << std::endl;
     }
     else
      std::cout << "No value" << std::endl;

@@ -3,15 +3,17 @@
 #include "Dictionary.h"
 #include "Rule.h"
 SequiturGrammar::SequiturGrammar() {
-  this->index = new Dictionary(1000000, this);
+  this->M = 256; //Index of the min rule value
+  this->index = new Dictionary(125100000, this);
   //128 first value after ASCII values
-  this->initialRule = new Rule(128, this); //Every rule will have a reference to the global index
+  this->initialRule = new Rule(this->M, this); //Every rule will have a reference to the global index
   this->numberOfRules = 1;
 
 }
 
 void SequiturGrammar::put(int c) {
-  this->initialRule->put(c);
+  if (c >= this->M){ std::cout << c << std::endl; std::cout << this->numberOfRules << std::endl; exit(0);}
+  else this->initialRule->put(c);
   //this->initialRule->print();
   //this->index->print();
 }

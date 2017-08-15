@@ -1,5 +1,6 @@
 #include "Node.h"
 #include "Rule.h"
+#include "SequiturGrammar.h"
 #include <iostream>
 
 Node::Node(Rule* rule) {
@@ -33,14 +34,14 @@ void Node::printRule() {
   Node* guard = this;
   while (!guard->isGuard) guard=guard->next;
   std::cout << "RULE USAGE=" << guard->rule->usage << ", ";
-  std::cout << guard->prev->symbol-128;
+  std::cout << guard->prev->symbol-this->rule->grammar->M;
   std::cout << " -> ";
   Node* t = guard->next;
   while (!t->isGuard) {
-    if (t->symbol<128)
+    if (t->symbol<this->rule->grammar->M)
       std::cout <<  (char)t->symbol<< " ";
     else {
-      std::cout <<  t->symbol-128<< " ";
+      std::cout <<  t->symbol-this->rule->grammar->M<< " ";
     //  std::cout << "RULE TO PRINT=" << t->rule->guard->prev->symbol << std::endl;
     }
     t = t->next;
@@ -49,13 +50,13 @@ void Node::printRule() {
 }
 
 void Node::printDigram() {
-  if (this->symbol < 128)
+  if (this->symbol < this->rule->grammar->M)
     std::cout << (char)this->symbol << ",";
   else
-    std::cout << this->symbol-128 << ",";
+    std::cout << this->symbol-this->rule->grammar->M << ",";
 
-  if (this->next->symbol < 128)
+  if (this->next->symbol < this->rule->grammar->M)
     std::cout << (char)this->next->symbol << std::endl;
   else
-    std::cout << this->next->symbol-128 << std::endl;
+    std::cout << this->next->symbol-this->rule->grammar->M << std::endl;
 }

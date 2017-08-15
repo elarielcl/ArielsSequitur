@@ -19,7 +19,7 @@ int main() {
 
 
 void digramOverlapTest() {
-  Rule* testRule = new Rule(128 ,new SequiturGrammar());
+  Rule* testRule = new Rule(256 ,new SequiturGrammar());
   testRule->put('a');
   testRule->put('a');
   testRule->put('a');
@@ -34,14 +34,19 @@ void digramOverlapTest() {
 
 void inputTest() {
   SequiturGrammar grammar;
+  int chars = 0;
 
   while (!feof(stdin)) {
     int c = fgetc(stdin);
     if (c == EOF) break;
     grammar.put(c);
+    if(++ chars % 1000000 == 0) cerr << (chars)/1000000 << endl << 1.0*grammar.index->a/grammar.index->n << endl;
+    //if ((chars)/1000000 == 68) exit(0);
+
   }
-  grammar.print();
-  grammar.printUncompress();
+  //grammar.print();
+  //grammar.printUncompress();
+  //cout << grammar.numberOfRules << endl ;
 }
 
 
