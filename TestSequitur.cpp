@@ -67,7 +67,7 @@ void ruleUsageTest(char string[]) {
       correctUsage = false;
       cout << "WRONG TEST" << endl;
       cout << "Rule for " << r->first->guard->prev->symbol << " referenced " << r->first->usage << " times" << endl;
-      break;
+      exit(1);
     }
     if(rules.find(r->first) == rules.end()) rules[r->first] = 0;
     for (Node* current = r->first->guard->next; !current->isGuard; current = current->next)
@@ -82,7 +82,7 @@ void ruleUsageTest(char string[]) {
       correctUsage = false;
       cout << "WRONG TEST" << endl;
       cout << "Rule for " << r->first->guard->prev->symbol << " referenced " << r->second << " times" << endl;
-      break;
+      exit(1);
     }
 
 
@@ -105,7 +105,10 @@ void simpleTest(char string[]) {
   std::string s="";
   grammar->getUncompress(&s);
   if (s == string) cout << "SUCCESSFUL TEST (OUTPUT == INPUT)" << endl;
-  else cout << "WRONG TEST (OUTPUT != INPUT)" << endl;
+  else {
+    cout << "WRONG TEST (OUTPUT != INPUT)" << endl;
+    exit(1);
+  }
 
   cout << "================" << endl << endl;
 }
@@ -137,7 +140,7 @@ void digramUniquenessTest(char string[]) {
           cout << "Digram: ";
           current->printDigram();
           cout << "is not unique"  << endl;
-          break;
+          exit(1);;
         }
       }
       if (hasRepeatedDigram) break;
