@@ -4,6 +4,7 @@
 #include "Dictionary.h"
 #include "SequiturGrammar.h"
 #include <vector>
+#include <string>
 
 Rule::Rule(int c, SequiturGrammar* grammar) {
   Node* nonTerminal = new Node(this, c);
@@ -37,14 +38,14 @@ void Rule::print() {
   std::vector<Rule*> v;
   this->printed = true;
   //std::cout << "RULE USAGE=" << this->usage << ", ";
-  std::cout << this->guard->prev->symbol-this->grammar->M;
+  std::cout << this->guard->prev->symbol;
   std::cout << "->";
   Node* t = this->guard->next;
   while (!t->isGuard) {
     if (t->symbol<this->grammar->M)
       std::cout <<  (char)t->symbol<< " ";
     else {
-      std::cout <<  t->symbol-this->grammar->M<< " ";
+      std::cout <<  t->symbol<< " ";
     //  std::cout << "RULE TO PRINT=" << t->rule->guard->prev->symbol << std::endl;
       if (!t->rule->printed) {
         v.push_back(t->rule);
@@ -69,6 +70,17 @@ void Rule::printUncompress() {
       std::cout << (char)current->symbol;
     else
       current->rule->printUncompress();
+    current = current->next;
+  }
+}
+
+void Rule::getUncompress(std::string* s) {
+  Node* current = this->guard->next;
+  while (!current->isGuard) {
+    if (current->symbol < this->grammar->M)
+      (*s)+= (char)current->symbol;
+    else
+      current->rule->getUncompress(s);
     current = current->next;
   }
 }

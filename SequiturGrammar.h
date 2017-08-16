@@ -1,3 +1,4 @@
+#include <string>
 class Rule;
 class Dictionary;
 class SequiturGrammar {
@@ -17,5 +18,7 @@ class SequiturGrammar {
     void print();
 
     void printUncompress();
+
+    void getUncompress(std::string*);
 
 };

@@ -23,7 +23,7 @@ Dictionary::Dictionary(const unsigned int n, SequiturGrammar* grammar) {
      break;
     this->n -= 2;
   }
-  std::cerr << "Espacio ocupado por el diccionario: " << ((sizeof (Node*))*this->n)/1000000 << "MB" << std::endl;
+  //std::cerr << "Espacio ocupado por el diccionario: " << ((sizeof (Node*))*this->n)/1000000 << "MB" << std::endl;
   this->table = new Node*[this->n];
   this->deleted = new Node(NULL, true); // A guard node represents a deleted  one in the table :D
   this->grammar = grammar;
@@ -341,11 +341,11 @@ void Dictionary::print() {
       if (current->symbol < this->grammar->M)
         std::cout << (char)current->symbol << ",";
       else
-        std::cout << current->symbol-this->grammar->M << ",";
+        std::cout << current->symbol << ",";
       if (current->next->symbol < this->grammar->M)
         std::cout << (char)current->next->symbol << std::endl;
       else
-        std::cout << current->next->symbol-this->grammar->M << std::endl;
+        std::cout << current->next->symbol << std::endl;
     }
     else
      std::cout << "No value" << std::endl;

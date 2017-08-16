@@ -25,3 +25,7 @@ void SequiturGrammar::print() {
 void SequiturGrammar::printUncompress() {
   this->initialRule->printUncompress();
 }
+
+void SequiturGrammar::getUncompress(std::string* s) {
+  this->initialRule->getUncompress(s);
+}

@@ -34,14 +34,14 @@ void Node::printRule() {
   Node* guard = this;
   while (!guard->isGuard) guard=guard->next;
   std::cout << "RULE USAGE=" << guard->rule->usage << ", ";
-  std::cout << guard->prev->symbol-this->rule->grammar->M;
+  std::cout << guard->prev->symbol;
   std::cout << " -> ";
   Node* t = guard->next;
   while (!t->isGuard) {
     if (t->symbol<this->rule->grammar->M)
       std::cout <<  (char)t->symbol<< " ";
     else {
-      std::cout <<  t->symbol-this->rule->grammar->M<< " ";
+      std::cout <<  t->symbol<< " ";
     //  std::cout << "RULE TO PRINT=" << t->rule->guard->prev->symbol << std::endl;
     }
     t = t->next;
@@ -53,10 +53,10 @@ void Node::printDigram() {
   if (this->symbol < this->rule->grammar->M)
     std::cout << (char)this->symbol << ",";
   else
-    std::cout << this->symbol-this->rule->grammar->M << ",";
+    std::cout << this->symbol << ",";
 
   if (this->next->symbol < this->rule->grammar->M)
     std::cout << (char)this->next->symbol << std::endl;
   else
-    std::cout << this->next->symbol-this->rule->grammar->M << std::endl;
+    std::cout << this->next->symbol << std::endl;
 }
