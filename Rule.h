@@ -6,10 +6,10 @@ class Rule {
 public:
     static SequiturGrammar* grammar;
     Node* guard;
-    int n;
     int usage;
     int symbol;
-    bool printed;
+
+    bool printed; //To output the grammar
 
     Rule(int c, SequiturGrammar* grammar);
 

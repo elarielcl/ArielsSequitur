@@ -16,7 +16,6 @@ using namespace std;
 
 void inputTest();
 void automatedTest();
-void digramOverlapTest();
 void digramUniquenessTest();
 void ruleUsageTest();
 int main() {
@@ -24,23 +23,9 @@ int main() {
   //digramUniquenessTest();
   inputTest();
   //automatedTest();
-  //digramOverlapTest();
 }
 
 
-void digramOverlapTest() {
-  Rule* testRule = new Rule(256 ,new SequiturGrammar());
-  testRule->put('a');
-  testRule->put('a');
-  testRule->put('a');
-  testRule->put('a');
-  testRule->print();
-  cout << testRule->guard->next->digramOverlap(testRule->guard->next->next) << endl;
-  cout << testRule->guard->next->next->digramOverlap(testRule->guard->next) << endl;
-
-  cout << testRule->guard->next->next->next->digramOverlap(testRule->guard->next) << endl;
-  cout << testRule->guard->next->digramOverlap(testRule->guard->next->next->next) << endl;
-}
 
 void inputTest() {
   SequiturGrammar grammar;
@@ -54,7 +39,9 @@ void inputTest() {
     //if ((chars)/1000000 == 68) exit(0);
 
   }
-  //grammar.print();
+
+  cout << "Compression ratio= " << 1.0*grammar.grammarSize/grammar.inputSize;
+  grammar.print();
   //grammar.printUncompress();
   //cout << grammar.numberOfRules << endl ;
 }

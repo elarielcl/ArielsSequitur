@@ -9,6 +9,8 @@ class SequiturGrammar {
   public:
     Rule* initialRule;
     Dictionary* index; // change to private as the others
+    int grammarSize;
+    int inputSize;
     int numberOfRules;
     int M;
     SequiturGrammar();

@@ -53,19 +53,11 @@ void Dictionary::putUnique(Node* node) {
     if(node->symbol == m->symbol && node->next->symbol==m->next->symbol) { //Is not Unique
       if (m->digramOverlap(node)) return;
 
-/*
-      //Information
-      std::cout << "Violation of " << (char)node->symbol << "," << (char)node->next->symbol << " uniqueness" << std::endl;
+
       if (m->prev->isGuard() && m->next->next->isGuard()) {
-        std::cout << "Rule exists:" << std::endl;
-        m->printRule();
-      }else {
-        std::cout << "In Rule(careful with rule impresion):" << std::endl;
-        m->printRule();
-      }
-      //Information
-*/
-      if (m->prev->isGuard() && m->next->next->isGuard()) {
+
+        this->grammar->grammarSize--;
+
         Rule* existentRule = m->prev->rule;
         existentRule->usage++;
 
@@ -107,7 +99,7 @@ void Dictionary::putUnique(Node* node) {
             if(dOcc->symbol>=this->grammar->M) {
               dOcc->rule->usage--;
               if (dOcc->rule->usage <= 1) {
-
+                this->grammar->grammarSize--;
                 //Delete x1B and Bx2
                 if (!dOcc->prev->isGuard()) {
                   this->remove(dOcc->prev);
@@ -149,7 +141,6 @@ void Dictionary::putUnique(Node* node) {
         //this->print();
 
       }else {
-
         int ruleName = (this->grammar->numberOfRules ++) + this->grammar->M; // Another idea?
         Rule* newRule = new Rule(ruleName, this->grammar);
         newRule->usage = 2;
@@ -218,7 +209,6 @@ void Dictionary::putUnique(Node* node) {
         newRule->guard->prev = m->next;
         m->prev = newRule->guard;
         m->next->next = newRule->guard;
-        newRule->n = 2;
 
 
         //DELETING
@@ -236,6 +226,7 @@ void Dictionary::putUnique(Node* node) {
           if(dOcc->symbol>=this->grammar->M) {
             dOcc->rule->usage--;
             if (dOcc->rule->usage <= 1) {
+              this->grammar->grammarSize--;
               //Delete x1B and Bx2
               if (!dOcc->prev->isGuard()) {
                 this->remove(dOcc->prev);
