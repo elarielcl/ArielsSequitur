@@ -99,6 +99,7 @@ void Dictionary::putUnique(Node* node) {
             if(dOcc->symbol>=this->grammar->M) {
               dOcc->rule->usage--;
               if (dOcc->rule->usage <= 1) {
+                this->grammar->numberOfRules--;
                 this->grammar->grammarSize--;
                 //Delete x1B and Bx2
                 if (!dOcc->prev->isGuard()) {
@@ -141,7 +142,8 @@ void Dictionary::putUnique(Node* node) {
         //this->print();
 
       }else {
-        int ruleName = (this->grammar->numberOfRules ++) + this->grammar->M; // Another idea?
+        this->grammar->numberOfRules++;
+        int ruleName = (this->grammar->nextRuleName ++); // Another idea?
         Rule* newRule = new Rule(ruleName, this->grammar);
         newRule->usage = 2;
         //Create two new nodes
@@ -227,6 +229,7 @@ void Dictionary::putUnique(Node* node) {
             dOcc->rule->usage--;
             if (dOcc->rule->usage <= 1) {
               this->grammar->grammarSize--;
+              this->grammar->numberOfRules--;
               //Delete x1B and Bx2
               if (!dOcc->prev->isGuard()) {
                 this->remove(dOcc->prev);
@@ -274,10 +277,6 @@ void Dictionary::putUnique(Node* node) {
   }}
 }
 
-Node* Dictionary::get(int i) {
-  return this->table[i];
-}
-
 Node* Dictionary::get(Node* node) {
   int i = node->hashCode() % this->n;
   int jump = 17 - (node->symbol % 17);
@@ -314,7 +313,7 @@ void Dictionary::remove(Node* node) {
 void Dictionary::print() {
   std::cout << "INDEX" << std::endl;
   for (int i = 0; i < this->n; ++i) {
-    Node* current = this->get(i);
+    Node* current = this->table[i];
     if (current && !current->isGuard())
       current->printDigram();
     else

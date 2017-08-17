@@ -1,32 +1,25 @@
-#include <iostream> //Remove
 #include "Rule.h"
 #include "Node.h"
-#include "Dictionary.h"
 #include "SequiturGrammar.h"
+#include <iostream> 
 #include <vector>
 #include <string>
 
 SequiturGrammar* Rule::grammar = NULL;
 
-Rule::Rule(int c, SequiturGrammar* grammar) {
-  //Node* nonTerminal = new Node(this, c);
+Rule::Rule(int c, SequiturGrammar* grammar):
+symbol(c),
+usage(0),
+printed(false) {
   Node* guard = new Node(this);
-  //nonTerminal->next = guard;
-  guard->prev = guard;
-  guard->next = guard;
-
+  guard->connect(guard);
   this->guard = guard;
-  this->symbol = c;
   this->grammar = grammar;
-  this->usage = 0;
-  this->printed = false;
 }
-
 
 void Rule::print() {
   std::vector<Rule*> v;
   this->printed = true;
-  //std::cout << "RULE USAGE=" << this->usage << ", ";
   std::cout << this->symbol;
   std::cout << "->";
   Node* t = this->guard->next;
@@ -35,21 +28,14 @@ void Rule::print() {
       std::cout <<  (char)t->symbol<< " ";
     else {
       std::cout <<  t->symbol<< " ";
-    //  std::cout << "RULE TO PRINT=" << t->rule->guard->prev->symbol << std::endl;
-      if (!t->rule->printed) {
+      if (!t->rule->printed)
         v.push_back(t->rule);
-        //std::cout << "\nPutting printed to=" << t->rule->guard->prev->symbol << std::endl;
-      }
     }
     t = t->next;
   }
   std::cout << std::endl;
-  //std::cout << "SUB RULES TO PRINT=" << v.size() << std::endl;
-  for (int i = 0; i<v.size(); ++i) {
+  for (int i = 0; i<v.size(); ++i)
     if (!v[i]->printed)v[i]->print();
-    //std::cout << "\nPutting UNprinted to=" << v[i]->guard->prev->symbol << std::endl;
-
-  }
 }
 
 void Rule::printUncompress() {

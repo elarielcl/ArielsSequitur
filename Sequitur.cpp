@@ -40,7 +40,7 @@ void inputTest() {
 
   }
 
-  cout << "Compression ratio= " << 1.0*grammar.grammarSize/grammar.inputSize;
+  cerr << "Compression ratio= " << 1.0*grammar.grammarSize/grammar.inputSize;
   grammar.print();
   //grammar.printUncompress();
   //cout << grammar.numberOfRules << endl ;

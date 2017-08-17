@@ -3,35 +3,33 @@
 #include "SequiturGrammar.h"
 #include <iostream>
 
-Node::Node(Rule* rule) {
-  this->rule = rule;
-  this->symbol = 0;
-}
-
-Node::Node(Rule* rule, int symbol) {
-  this->symbol = symbol;
-  this->rule = rule;
-}
+Node::Node(Rule* rule, int symbol) :
+rule(rule),
+symbol(symbol){}
 
 bool Node::isGuard() {
   return this->symbol == 0;
 }
-//Return the hashCode of the pair
-int Node::hashCode() {
+
+int Node::hashCode() { // Same as craig's implementation
   int combined = ((this->symbol << 16) | (this->symbol >> 16)) ^ (this->next->symbol);
   return (combined * (combined + 3));
 }
 
-
 bool Node::digramOverlap(Node* other) {
-  return this->next == other || this->prev == other; // same?
+  return this->next == other || this->prev == other;
+}
+
+void Node::connect(Node* other) {
+  this->next = other;
+  other->prev = this;
 }
 
 void Node::printRule() {
   Node* guard = this;
   while (!guard->isGuard()) guard=guard->next;
   std::cout << "RULE USAGE=" << guard->rule->usage << ", ";
-  std::cout << guard->prev->symbol;
+  std::cout << guard->rule->symbol;
   std::cout << " -> ";
   Node* t = guard->next;
   while (!t->isGuard()) {
@@ -39,7 +37,6 @@ void Node::printRule() {
       std::cout <<  (char)t->symbol<< " ";
     else {
       std::cout <<  t->symbol<< " ";
-    //  std::cout << "RULE TO PRINT=" << t->rule->guard->prev->symbol << std::endl;
     }
     t = t->next;
   }

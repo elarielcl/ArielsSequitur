@@ -16,6 +16,7 @@ void simpleTest(char[]);
 void ruleUsageTest(char[]);
 void digramUniquenessTest(char[]);
 void grammarSizeTest(char[], int);
+void numberOfRulesTest(char string[], int expectedNOR);
 
 int main() {
   vector<char*> v;
@@ -31,12 +32,23 @@ int main() {
   for (s = v.begin(); s != v.end(); ++s)
     simpleTest(*s);
 
+  vector<int> nOR;
+  nOR.push_back(3);
+  nOR.push_back(3);
+  nOR.push_back(6);
+  nOR.push_back(4);
+  nOR.push_back(4); // Precomputed Values
+  cout << "GRAMMAR SIZE TEST" << endl << "=====================================" << endl << endl;
+  for (int i = 0; i < nOR.size(); ++i)
+    numberOfRulesTest(v[i], nOR[i]);
+
+
   vector<int> sizes;
   sizes.push_back(8);
   sizes.push_back(9);
   sizes.push_back(15);
   sizes.push_back(9);
-  sizes.push_back(9);
+  sizes.push_back(9); // Precomputed Values
   cout << "GRAMMAR SIZE TEST" << endl << "=====================================" << endl << endl;
   for (int i = 0; i < sizes.size(); ++i)
     grammarSizeTest(v[i], sizes[i]);
@@ -110,6 +122,20 @@ void grammarSizeTest(char string[], int expectedGrammarSize) {
   if (grammar->grammarSize == expectedGrammarSize) cout << "SUCCESSFUL TEST (GrammarSize == expected)" << endl;
   else {
     cout << "WRONG TEST (GrammarSize(" << grammar->grammarSize << ") != expected("<< expectedGrammarSize << "))" << endl;
+    exit(1);
+  }
+
+  cout << "================" << endl << endl;
+}
+
+void numberOfRulesTest(char string[], int expectedNOR) {
+  cout << "INPUT=" << string << endl;
+  SequiturGrammar* grammar = new SequiturGrammar();
+  for (int i = 0; string[i]!=0; ++i)
+    grammar->put(string[i]);
+  if (grammar->numberOfRules == expectedNOR) cout << "SUCCESSFUL TEST (GrammarSize == expected)" << endl;
+  else {
+    cout << "WRONG TEST (NumberOfRules(" << grammar->numberOfRules << ") != expected("<< expectedNOR << "))" << endl;
     exit(1);
   }
 

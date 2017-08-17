@@ -1,20 +1,17 @@
-#include <iostream>//Delete
+#include <iostream>
 #include "SequiturGrammar.h"
 #include "Dictionary.h"
 #include "Rule.h"
 #include "Node.h"
 
-SequiturGrammar::SequiturGrammar() {
-  this->M = 256; //Index of the min rule value
-  this->index = new Dictionary(125100000, this);
-  //this->index = new Dictionary(30, this);
-  //128 first value after ASCII values
-  this->initialRule = new Rule(this->M, this); //Every rule will have a reference to the global index
-  this->numberOfRules = 1;
-  this->inputSize = 0;
-  this->grammarSize = 0;
-
-}
+SequiturGrammar::SequiturGrammar(int M, int indexSize):
+M(M),
+index(new Dictionary(indexSize, this)),
+initialRule(new Rule(M, this)),
+nextRuleName(M+1),
+numberOfRules(1),
+inputSize(0),
+grammarSize(0) {}
 
 void SequiturGrammar::put(int c) {
   this->inputSize++;
@@ -26,12 +23,10 @@ void SequiturGrammar::put(int c) {
   }else {
     Node* n = new Node(this->initialRule, c);
     Node* prevLast = this->initialRule->guard->prev;
-    prevLast->next = n;
-    n->prev = prevLast;
-    n->next = this->initialRule->guard;
-    initialRule->guard->prev = n;
-
-    if (this->inputSize >= 2) //I
+    prevLast->connect(n);
+    n->connect(this->initialRule->guard);
+    
+    if (this->inputSize >= 2) // when there are digrams
       this->index->putUnique(prevLast);
   }
 }
