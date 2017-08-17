@@ -22,6 +22,7 @@ Dictionary::Dictionary(const unsigned int n, SequiturGrammar* grammar) {
      break;
     this->n -= 2;
   }
+
   std::cerr << "Espacio ocupado por el diccionario: " << ((sizeof (Node*))*this->n)/1000000 << "MB" << std::endl;
   this->table = new Node*[this->n];
   this->deleted = new Node(NULL); // A guard node represents a deleted  one in the table :D
@@ -31,7 +32,7 @@ Dictionary::Dictionary(const unsigned int n, SequiturGrammar* grammar) {
 
 void Dictionary::put(Node* node) {
   int i = node->hashCode() % this->n;
-  int jump = 17 - (node->symbol % 17);
+  int jump = 17 - (node->symbol % 17); // open addressing, copied from craig
   while (1) {
     Node* m = this->table[i];
     if (m==NULL || m->isGuard()) {
@@ -43,255 +44,190 @@ void Dictionary::put(Node* node) {
   }
 }
 
+
 void Dictionary::putUnique(Node* node) {
-  int insertingIndex = -1;
-  int i = node->hashCode() % this->n;
-  int jump = 17 - (node->symbol % 17);
-  while (1) {
-    Node* m = this->table[i];
-    if (m == NULL) {
-      if (insertingIndex != -1) this->table[insertingIndex] = node;
-      else this->table[i] = node;
-      return;
-    }
-    else if (m->isGuard() && insertingIndex == -1)
-      insertingIndex == i;
-    else if(!m->isGuard() && node->symbol == m->symbol && node->next->symbol==m->next->symbol) { //Is not Unique
-      if (m->digramOverlap(node)) return;
+  Node** insertAt = this->get(node);
+  if ((*insertAt) == NULL || (*insertAt) ->isGuard()){ // is there a better way?
+    *insertAt = node;
+    this->a++;
+  }
+  else {
+    Node* m = *insertAt;
+    if (m->digramOverlap(node)) return;
 
+    if (m->prev->isGuard() && m->next->next->isGuard()) {
 
-      if (m->prev->isGuard() && m->next->next->isGuard()) {
+      this->grammar->grammarSize--;
 
-        this->grammar->grammarSize--;
+      Rule* existentRule = m->prev->rule;
+      existentRule->usage++;
 
-        Rule* existentRule = m->prev->rule;
-        existentRule->usage++;
+      //Create one new node
+      Node* one = new Node(existentRule, existentRule->symbol);
 
-        //Create one new node
-        Node* one = new Node(existentRule, existentRule->symbol);
+      // remove existent digrams in the index
+      if (!node->prev->isGuard())
+        this->remove(node->prev);
+      if (!node->next->next->isGuard())
+        this->remove(node->next);
 
-        //Remove ab from index
-        if (!node->prev->isGuard()) {
-          this->remove(node->prev);
-        }
-        //Remove cd from index
-        if (!node->next->next->isGuard()) {
-          this->remove(node->next);
-        }
+      //Insert one
+      node->prev->connect(one);
+      one->connect(node->next->next);
 
-        //Insert one
-        node->prev->next = one;
-        one->prev = node->prev;
-        one->next = node->next->next; //Delete the digram or put this on the rule
-        node->next->next->prev = one;
-
-
-
-        if (!one->prev->isGuard())
-          this->putUnique(one->prev);
-        if (!one->next->isGuard())
-          this->putUnique(one);
-
-          //DELETING
-
-          delete node->next;
-          delete node;
-
-          //DELETING
-
-          //CHECK DELETION HERE
-          Node* dOcc = existentRule->guard->next; //deprecatedOccurrence
-          while (!dOcc->isGuard()) {
-            if(dOcc->symbol>=this->grammar->M) {
-              dOcc->rule->usage--;
-              if (dOcc->rule->usage <= 1) {
-                this->grammar->numberOfRules--;
-                this->grammar->grammarSize--;
-                //Delete x1B and Bx2
-                if (!dOcc->prev->isGuard()) {
-                  this->remove(dOcc->prev);
-                }
-                if (!dOcc->next->isGuard()) {
-                  this->remove(dOcc);
-                }
-
-                // Delete things
-                dOcc->rule->guard->next->prev = dOcc->prev;
-                dOcc->prev->next = dOcc->rule->guard->next;
-                dOcc->rule->guard->prev->next = dOcc->next;
-                dOcc->next->prev = dOcc->rule->guard->prev;
-
-
-                if (!dOcc->next->isGuard()){
-                  this->putUnique(dOcc->next->prev);
-                }
-                if (!dOcc->prev->isGuard()) {
-                  this->putUnique(dOcc->prev);
-                }
-
-                Node* next = dOcc->next;
-
-                //DELETING
-
-                delete dOcc->rule->guard;
-                delete dOcc->rule;
-                delete dOcc;
-
-                //DELETING
-                dOcc = next;
-                //Revisar por el last
-              }else dOcc = dOcc->next;
-            }
-            else dOcc = dOcc->next;
-        }
-        //one->printRule();
-        //this->print();
-
-      }else {
-        this->grammar->numberOfRules++;
-        int ruleName = (this->grammar->nextRuleName ++); // Another idea?
-        Rule* newRule = new Rule(ruleName, this->grammar);
-        newRule->usage = 2;
-        //Create two new nodes
-        Node* one = new Node(newRule, ruleName);
-        Node* two = new Node(newRule, ruleName);
-
-        //Remove ab from index
-        if (!node->prev->isGuard()) {
-          this->remove(node->prev);
-        }
-        //Remove cd from index
-        if (!node->next->next->isGuard()) {
-          this->remove(node->next);
-        }
-
-
-
-        //Insert one
-        node->prev->next = one;
-        one->prev = node->prev;
-        one->next = node->next->next; //Delete the digram or put this on the rule
-        node->next->next->prev = one;
-
-
-        //this->grammar->index->print();
-        //Here put in the index the new digram (case not before)
-        if (!one->prev->isGuard()) {
-          this->put(one->prev); //Not recursive
-        }
-
-
-        if (!one->next->isGuard()) {
-          this->put(one); //Not recursive
-        }
-
-
-
-        //Remove x1b and cx2 from index
-        if (!m->prev->isGuard()) {
-          this->remove(m->prev);
-        }
-
-
-        if (!m->next->next->isGuard()) {
-          this->remove(m->next);
-        }
-
-        //Insert two
-        m->prev->next = two;
-        two->prev = m->prev;
-        two->next = m->next->next;
-        m->next->next->prev = two;
-
-        //Here put in the index the new digrams (case not before)
-        if (!two->prev->isGuard()) {
-          this->put(two->prev); //Not recursive
-        }
-        if (!two->next->isGuard()) {
-          this->put(two); //Not recursive
-        }
-
-
-        //Put the symbols in the new rule
-        newRule->guard->next = m;
-        newRule->guard->prev = m->next;
-        m->prev = newRule->guard;
-        m->next->next = newRule->guard;
-
+      // put new digrams in the index
+      if (!one->prev->isGuard())
+        this->putUnique(one->prev);
+      if (!one->next->isGuard())
+        this->putUnique(one);
 
         //DELETING
-
         delete node->next;
         delete node;
-
         //DELETING
 
-        //one->printRule();
-        //this->print();
-
-        Node* dOcc = newRule->guard->next; //deprecatedOccurrence
-        while (!dOcc->isGuard()) { //DONT FORGET CHANGE THE OTHER
+        // delete deprecatedOcurrences
+        Node* dOcc = existentRule->guard->next; //deprecatedOccurrence
+        while (!dOcc->isGuard()) {
           if(dOcc->symbol>=this->grammar->M) {
             dOcc->rule->usage--;
             if (dOcc->rule->usage <= 1) {
-              this->grammar->grammarSize--;
               this->grammar->numberOfRules--;
-              //Delete x1B and Bx2
-              if (!dOcc->prev->isGuard()) {
+              this->grammar->grammarSize--;
+
+              // remove existent digrams in the index
+              if (!dOcc->prev->isGuard())
                 this->remove(dOcc->prev);
-              }
-              if (!dOcc->next->isGuard()) {
+              if (!dOcc->next->isGuard())
                 this->remove(dOcc);
-              }
 
-              // Delete things
-              dOcc->rule->guard->next->prev = dOcc->prev;
-              dOcc->prev->next = dOcc->rule->guard->next;
-              dOcc->rule->guard->prev->next = dOcc->next;
-              dOcc->next->prev = dOcc->rule->guard->prev;
+              // restructure pointers
+              dOcc->prev->connect(dOcc->rule->guard->next);
+              dOcc->rule->guard->prev->connect(dOcc->next);
 
-
-
-              if (!dOcc->next->isGuard()){
+              // put new digrams in the index
+              if (!dOcc->next->isGuard())
                 this->putUnique(dOcc->next->prev);
-              }
-              if (!dOcc->prev->isGuard()) {
+              if (!dOcc->prev->isGuard())
                 this->putUnique(dOcc->prev);
-              }
+
               Node* next = dOcc->next;
 
               //DELETING
-
               delete dOcc->rule->guard;
               delete dOcc->rule;
               delete dOcc;
-
               //DELETING
               dOcc = next;
-              //Revisar por el last
             }else dOcc = dOcc->next;
-          }
-          else dOcc = dOcc->next;
-        }
-
+          }else dOcc = dOcc->next;
       }
+    }else {
+      this->grammar->numberOfRules++;
+      int ruleName = (this->grammar->nextRuleName ++); // Another idea?
+      Rule* newRule = new Rule(ruleName, this->grammar);
+      newRule->usage = 2;
 
+      //Create two new nodes
+      Node* one = new Node(newRule, ruleName);
+      Node* two = new Node(newRule, ruleName);
 
-      return;
+      // remove existent digrams in the index
+      if (!node->prev->isGuard())
+        this->remove(node->prev);
+      if (!node->next->next->isGuard())
+        this->remove(node->next);
+
+      //Insert one
+      node->prev->connect(one);
+      one->connect(node->next->next);
+
+      //Here put in the index the new digram (case not before)
+      if (!one->prev->isGuard())
+        this->put(one->prev); //Not recursive
+      if (!one->next->isGuard())
+        this->put(one); //Not recursive
+
+      // remove existent digrams in the index
+      if (!m->prev->isGuard())
+        this->remove(m->prev);
+      if (!m->next->next->isGuard())
+        this->remove(m->next);
+
+      //Insert two
+      m->prev->connect(two);
+      two->connect(m->next->next);
+
+      //Here put in the index the new digrams (case not before)
+      if (!two->prev->isGuard())
+        this->put(two->prev); //Not recursive
+      if (!two->next->isGuard())
+        this->put(two); //Not recursive
+
+      //Put the symbols in the new rule
+      newRule->guard->connect(m);
+      m->next->connect(newRule->guard);
+
+      //DELETING
+      delete node->next;
+      delete node;
+      //DELETING
+
+      // delete deprecatedOcurrences
+      Node* dOcc = newRule->guard->next; //deprecatedOccurrence
+      while (!dOcc->isGuard()) {
+        if(dOcc->symbol>=this->grammar->M) {
+          dOcc->rule->usage--;
+          if (dOcc->rule->usage <= 1) {
+            this->grammar->grammarSize--;
+            this->grammar->numberOfRules--;
+
+            // remove existent digrams in the index
+            if (!dOcc->prev->isGuard())
+              this->remove(dOcc->prev);
+            if (!dOcc->next->isGuard())
+              this->remove(dOcc);
+
+            // restructure pointers
+            dOcc->prev->connect(dOcc->rule->guard->next);
+            dOcc->rule->guard->prev->connect(dOcc->next);
+
+            // put new digrams in the index
+            if (!dOcc->next->isGuard())
+              this->putUnique(dOcc->next->prev);
+            if (!dOcc->prev->isGuard())
+              this->putUnique(dOcc->prev);
+
+            Node* next = dOcc->next;
+
+            //DELETING
+            delete dOcc->rule->guard;
+            delete dOcc->rule;
+            delete dOcc;
+            //DELETING
+            dOcc = next;
+          }else dOcc = dOcc->next;
+        }else dOcc = dOcc->next;
+      }
     }
-    i = (i + jump) % this->n;
   }
 }
 
-Node* Dictionary::get(Node* node) {
+Node** Dictionary::get(Node* node) {
+  int insertingIndex = -1;
   int i = node->hashCode() % this->n;
-  int jump = 17 - (node->symbol % 17);
+  int jump = 17 - (node->symbol % 17); // open addressing, copied from craig
   while (1) {
     Node* m = this->table[i];
-    if (m==NULL) {
-      break;
-    }else if(!m->isGuard() && node->symbol == m->symbol && node->next->symbol==m->next->symbol) {
-      return m;
+    if (m==NULL)
+      if (insertingIndex == -1)
+        return &(this->table[i]);
+      else
+          return &(this->table[insertingIndex]);
+    else if(m->isGuard() && insertingIndex == -1)
+      insertingIndex = i;
+    else if(!m->isGuard() && node->symbol == m->symbol && node->next->symbol==m->next->symbol) {
+      return &(this->table[i]);
     }
     i = (i + jump) % this->n;
   }
@@ -300,16 +236,19 @@ Node* Dictionary::get(Node* node) {
 
 void Dictionary::remove(Node* node) {
   int i = node->hashCode() % this->n;
-  int jump = 17 - (node->symbol % 17);
+  int jump = 17 - (node->symbol % 17); // open addressing, copied from craig
   while (1) {
     Node* m = this->table[i];
     if (m==NULL) {
       return;
     }else if(!m->isGuard() && node->symbol == m->symbol && node->next->symbol==m->next->symbol) {
-      if (m->digramOverlap(node)) return;
-      else if (m == node && !m->next->next->isGuard() && m->symbol == m->next->symbol && m->symbol == m->next->next->symbol)
+      if (m->digramOverlap(node)) return; // don't delete overlap occurence
+      else if (m == node && !m->next->next->isGuard() && m->symbol == m->next->symbol && m->symbol == m->next->next->symbol) // change the table pointer if the digram already exists on the grammar
         this->table[i] = m->next;
-      else {this->table[i] = deleted; this->a--;}
+      else {
+        this->table[i] = deleted; // lazy deletion, open addressing
+        this->a--;
+      }
       return;
     }
     i = (i + jump) % this->n;

@@ -41,7 +41,7 @@ void inputTest() {
   }
 
   cerr << "Compression ratio= " << 1.0*grammar.grammarSize/grammar.inputSize;
-  grammar.print();
+  //grammar.print();
   //grammar.printUncompress();
   //cout << grammar.numberOfRules << endl ;
 }
