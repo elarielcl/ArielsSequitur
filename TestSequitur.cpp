@@ -41,7 +41,7 @@ int main() {
 }
 void getRules(Rule* rule, map<Rule*,int>* rules) {
   (*rules)[rule] = 0;
-  for (Node* current = rule->guard->next; !current->isGuard; current = current->next)
+  for (Node* current = rule->guard->next; !current->isGuard(); current = current->next)
     if (current->symbol >=rule->grammar->M) getRules(current->rule, rules);
 
 }
@@ -66,11 +66,11 @@ void ruleUsageTest(char string[]) {
     if (r->first!= grammar->initialRule && r->first->usage <= 1) {
       correctUsage = false;
       cout << "WRONG TEST" << endl;
-      cout << "Rule for " << r->first->guard->prev->symbol << " referenced " << r->first->usage << " times" << endl;
+      cout << "Rule for " << r->first->symbol << " referenced " << r->first->usage << " times" << endl;
       exit(1);
     }
     if(rules.find(r->first) == rules.end()) rules[r->first] = 0;
-    for (Node* current = r->first->guard->next; !current->isGuard; current = current->next)
+    for (Node* current = r->first->guard->next; !current->isGuard(); current = current->next)
       if (current->symbol >= grammar->M)
         if(rules.find(current->rule) == rules.end()) rules[current->rule] = 1;
         else rules[current->rule]++;
@@ -81,7 +81,7 @@ void ruleUsageTest(char string[]) {
     if (r->first != grammar->initialRule && r->second <= 1) {
       correctUsage = false;
       cout << "WRONG TEST" << endl;
-      cout << "Rule for " << r->first->guard->prev->symbol << " referenced " << r->second << " times" << endl;
+      cout << "Rule for " << r->first->symbol << " referenced " << r->second << " times" << endl;
       exit(1);
     }
 
@@ -130,7 +130,7 @@ void digramUniquenessTest(char string[]) {
 
   bool hasRepeatedDigram = false;
   for (r = rules.begin(); r != rules.end(); ++r) {
-    for (Node* current = r->first->guard->next; !current->isGuard && !current->next->isGuard; current = current->next) {
+    for (Node* current = r->first->guard->next; !current->isGuard() && !current->next->isGuard(); current = current->next) {
         if(digrams.find(current) == digrams.end()) {
           digrams.insert(current);
         }else if (!(current->symbol == current->prev->symbol && current->symbol == current->next->symbol)){

@@ -5,6 +5,7 @@
 SequiturGrammar::SequiturGrammar() {
   this->M = 256; //Index of the min rule value
   this->index = new Dictionary(125100000, this);
+  //this->index = new Dictionary(30, this);
   //128 first value after ASCII values
   this->initialRule = new Rule(this->M, this); //Every rule will have a reference to the global index
   this->numberOfRules = 1;

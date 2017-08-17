@@ -4,11 +4,11 @@ class Node;
 class string;
 class Rule {
 public:
+    static SequiturGrammar* grammar;
     Node* guard;
-    Node* last;
-    SequiturGrammar* grammar;
     int n;
     int usage;
+    int symbol;
     bool printed;
 
     Rule(int c, SequiturGrammar* grammar);

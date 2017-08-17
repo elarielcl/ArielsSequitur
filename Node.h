@@ -2,7 +2,6 @@ class Rule;
 class Node {
   public:
     int symbol;
-    bool isGuard;
     Node* next;
     Node* prev;
     Rule* rule;
@@ -11,8 +10,8 @@ class Node {
 
     Node(Rule* rule, int symbol);
 
-    Node(Rule* rule, bool isGuard);
-
+    bool isGuard();
+    
     bool digramOverlap(Node* other);
 
     //Return the hashCode of the pair
