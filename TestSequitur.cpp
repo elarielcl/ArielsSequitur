@@ -22,11 +22,11 @@ int main() {
   vector<char*> v;
   vector <char*> :: iterator s;
 
-  v.push_back("abcdbcabcd");
-  v.push_back("cdddcdaddcd");
-  v.push_back("cdddcdaddcdcdddcdaddcdcdddcdaddcdcdddcdaddcdcdddcdaddcdcdddcdaddcdcdddcdaddcdcdddcdaddcd");
-  v.push_back("aaaaaaaaaaaaaaaaaaaaaaaa");
-  v.push_back("ababababababababab");
+  v.push_back((char*)"abcdbcabcd");
+  v.push_back((char*)"cdddcdaddcd");
+  v.push_back((char*)"cdddcdaddcdcdddcdaddcdcdddcdaddcdcdddcdaddcdcdddcdaddcdcdddcdaddcdcdddcdaddcdcdddcdaddcd");
+  v.push_back((char*)"aaaaaaaaaaaaaaaaaaaaaaaa");
+  v.push_back((char*)"ababababababababab");
 
   cout << "SIMPLE TEST" << endl << "=====================================" << endl << endl;
   for (s = v.begin(); s != v.end(); ++s)
