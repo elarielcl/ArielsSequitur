@@ -44,13 +44,19 @@ void Dictionary::put(Node* node) {
 }
 
 void Dictionary::putUnique(Node* node) {
-  if (this->get(node) == NULL) this->put(node); //IMPROVE
-  else {
+  int insertingIndex = -1;
   int i = node->hashCode() % this->n;
   int jump = 17 - (node->symbol % 17);
   while (1) {
     Node* m = this->table[i];
-    if(node->symbol == m->symbol && node->next->symbol==m->next->symbol) { //Is not Unique
+    if (m == NULL) {
+      if (insertingIndex != -1) this->table[insertingIndex] = node;
+      else this->table[i] = node;
+      return;
+    }
+    else if (m->isGuard() && insertingIndex == -1)
+      insertingIndex == i;
+    else if(!m->isGuard() && node->symbol == m->symbol && node->next->symbol==m->next->symbol) { //Is not Unique
       if (m->digramOverlap(node)) return;
 
 
@@ -274,7 +280,7 @@ void Dictionary::putUnique(Node* node) {
       return;
     }
     i = (i + jump) % this->n;
-  }}
+  }
 }
 
 Node* Dictionary::get(Node* node) {
