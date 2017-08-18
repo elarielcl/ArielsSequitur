@@ -23,7 +23,6 @@ Dictionary::Dictionary(const unsigned int n, SequiturGrammar* grammar) {
     this->n -= 2;
   }
 
-  std::cerr << "Espacio ocupado por el diccionario: " << ((sizeof (Node*))*this->n)/1000000 << "MB" << std::endl;
   this->table = new Node*[this->n];
   this->deleted = new Node(NULL); // A guard node represents a deleted  one in the table :D
   this->grammar = grammar;

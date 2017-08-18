@@ -1,7 +1,7 @@
 #include "Rule.h"
 #include "Node.h"
 #include "SequiturGrammar.h"
-#include <iostream> 
+#include <iostream>
 #include <vector>
 #include <string>
 
@@ -20,14 +20,14 @@ printed(false) {
 void Rule::print() {
   std::vector<Rule*> v;
   this->printed = true;
-  std::cout << this->symbol;
+  std::cout << "S" << this->symbol-this->grammar->M;
   std::cout << "->";
   Node* t = this->guard->next;
   while (!t->isGuard()) {
     if (t->symbol<this->grammar->M)
       std::cout <<  (char)t->symbol<< " ";
     else {
-      std::cout <<  t->symbol<< " ";
+      std::cout <<  "S" << this->symbol-this->grammar->M << " ";
       if (!t->rule->printed)
         v.push_back(t->rule);
     }
