@@ -27,7 +27,7 @@ void Rule::print() {
     if (t->symbol<this->grammar->M)
       std::cout <<  (char)t->symbol<< " ";
     else {
-      std::cout <<  "S" << this->symbol-this->grammar->M << " ";
+      std::cout <<  "S" << t->symbol-this->grammar->M << " ";
       if (!t->rule->printed)
         v.push_back(t->rule);
     }
