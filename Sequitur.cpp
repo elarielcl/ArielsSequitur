@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <unistd.h>
 #include "SequiturGrammar.h"
 #include "Node.h"
 #include "Dictionary.h"
@@ -12,15 +13,31 @@ int blog (int x) {
   return l;
 }
 
-int main() {
-  SequiturGrammar grammar;
-  int chars = 0;
+int main(int argc, char **argv) {
+  extern char *optarg;
+  extern int optind, opterr;
+  FILE *fp = stdin;
 
-  while (!feof(stdin)) {
-    int c = fgetc(stdin);
+  int c;
+
+  while ((c = getopt(argc, argv, "f:")) != -1) {
+    switch (c) {
+      case 'f':
+      fp = fopen(optarg, "r");
+      if (fp == NULL) {
+        cerr << "Error oppening \"" << optarg << "\" file" << endl;
+        exit(1);
+      } break;
+    }
+  }
+
+  SequiturGrammar grammar;
+  while (!feof(fp)) {
+    int c = fgetc(fp);
     if (c == EOF) break;
     grammar.put(c);
   }
+
   fprintf (stderr,"\nSequitur succeeded\n\n");
   fprintf (stderr,"Grammar\n\n");
   grammar.print();
@@ -30,4 +47,5 @@ int main() {
   fprintf (stderr,"Grammar Size: %i\n",grammar.grammarSize);
   fprintf (stderr,"Compression ratio: %0.2f%%\n",
 			100.0*blog(grammar.M+grammar.numberOfRules)*grammar.grammarSize/(8.0*grammar.inputSize)); // In case we code the grammar with log |R|+|$\Sigma$| bits
+
 }

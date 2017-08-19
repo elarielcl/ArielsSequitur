@@ -23,7 +23,25 @@ $ make
 ```
 ./Sequitur
 ```
-   - From file (:B)
+   - From file
 ```
-cat <filename> | ./Sequitur
+./Sequitur -f <filename>
+```
+
+## Example
+```
+...$cat data 
+abcdbcabcd...$ ./Sequitur -f data
+
+Sequitur succeeded
+
+Grammar
+
+S0->S3 S1 S3 
+S3->a S1 d 
+S1->b c 
+Original chars: 10
+Number of rules: 3
+Grammar Size: 8
+Compression ratio: 90.00%
 ```
