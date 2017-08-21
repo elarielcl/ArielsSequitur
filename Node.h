@@ -7,7 +7,7 @@ class Node {
     Rule* rule; // ff nonTerminal rule of the nonTerminal, else rule where this Node is in
 
     // construct a symbol node, if no symbol specified then construct a guard node
-    Node(Rule* rule, int symbol = 0);
+    Node(Rule* rule, int symbol = -1);
 
     // wheter or not the Node is a guard node
     bool isGuard();

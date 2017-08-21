@@ -8,7 +8,7 @@ rule(rule),
 symbol(symbol){}
 
 bool Node::isGuard() {
-  return this->symbol == 0;
+  return this->symbol == -1;
 }
 
 int Node::hashCode() { // Same as craig's implementation
