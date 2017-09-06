@@ -1,6 +1,7 @@
 # ArielsSequitur
-Implementation of the sequitur algorithm following the Craignm Ideas (C++).
-At running this implementation prints the output grammar an some stats.
+Implementation of the sequitur algorithm following the Craignm Ideas (C++). The hash table's implementation was copied from the Craig's original implementation available at: [https://github.com/craignm/sequitur](https://github.com/craignm/sequitur)
+
+At running this implementation prints the output grammar and some stats.
 
 ## To compile
 - On the repo directory
